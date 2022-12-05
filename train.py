@@ -105,7 +105,8 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 
 # check model version in repo
 versions = []
-for _, dirs, _ in os.walk(MODEL_PATH):
+version_path = os.path.join(MODEL_PATH, TRAIN_MODEL_NAME)
+for _, dirs, _ in os.walk(version_path):
     for dir in dirs:
         try:
             versions.append(int(dir))
@@ -150,7 +151,7 @@ if not TRAIN_FROM_CHECKPOINT:
 else:
     
     # load saved model
-    model_path=os.path.join(MODEL_PATH, str(highest_version - 1), 'model.savedmodel')
+    model_path=os.path.join(MODEL_PATH, TRAIN_MODEL_NAME, str(highest_version - 1), 'model.savedmodel')
     model = keras.models.load_model(model_path)
 
     model.compile(optimizer=keras.optimizers.Adam(1e-5),
@@ -161,7 +162,7 @@ else:
     model.fit(train_generator, epochs=TRAIN_EPOCHS, callbacks=model_checkpoint_callback, validation_data=valid_generator)
 
 # save best model
-model_path=os.path.join(MODEL_PATH, str(highest_version), 'model.savedmodel')
+model_path=os.path.join(MODEL_PATH, TRAIN_MODEL_NAME, str(highest_version), 'model.savedmodel')
 
 model.load_weights(os.path.join(TRAIN_CHECKPOINTS_FOLDER, TRAIN_MODEL_NAME))
 
