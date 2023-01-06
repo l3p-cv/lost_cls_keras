@@ -5,6 +5,7 @@ import json
 
 from tensorflow import keras
 from keras.preprocessing.image import ImageDataGenerator
+from keras.layers import Dense, GlobalAveragePooling2D
 
 from config import *
 
@@ -127,21 +128,23 @@ if not TRAIN_FROM_CHECKPOINT:
     # build model
     base_model = tf.keras.applications.MobileNet(input_shape=(TRAIN_INPUT_SIZE, TRAIN_INPUT_SIZE, 3),
                                                 include_top=False,
-                                                classifier_activation="softmax",
-                                                weights='imagenet',
-                                                dropout=0.01)
+                                                weights="imagenet",
+                                                classes=TRAIN_CLASS_NUMBERS,
+                                                classifier_activation="softmax")
 
 
-    inputs = keras.Input(shape=(TRAIN_INPUT_SIZE, TRAIN_INPUT_SIZE, 3))
-    x = base_model(inputs, training=True)
-    x = keras.layers.GlobalAveragePooling2D()(x)
-    x = keras.layers.Dense(5)(x)
-    outputs = keras.layers.Softmax()(x)
+
+    inputs = base_model.input
+
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(1024, activation='relu')(x)
+    outputs = Dense(TRAIN_CLASS_NUMBERS, activation='softmax')(x)
 
     model = keras.Model(inputs, outputs)
 
     model.compile(optimizer=keras.optimizers.Adam(),
-                loss=keras.losses.CategoricalCrossentropy(from_logits=False),
+                loss=keras.losses.CategoricalCrossentropy(from_logits=True),
                 metrics=[keras.metrics.CategoricalAccuracy()])
 
     # train

@@ -8,6 +8,7 @@ TRAIN_INPUT_SIZE                = 224 # tensorflow model supports 128, 160, 192,
 TRAIN_BATCH_SIZE                = 16
 TRAIN_CHECKPOINTS_FOLDER        = "checkpoints"
 TRAIN_EPOCHS                    = 100
+TRAIN_CLASS_NUMBERS             = 5
 
 #  Model options
 MODEL_PATH                      = "path/to/model_repo" 
